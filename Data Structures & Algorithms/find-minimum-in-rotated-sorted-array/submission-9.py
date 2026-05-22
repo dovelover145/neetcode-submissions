@@ -1,0 +1,54 @@
+class Solution:
+    def findMin(self, nums: List[int]) -> int:
+        def brute_force(nums): # O(n) time complexity; O(1) space complexity
+            # return min(nums)
+            min = nums[0]
+            for num in nums[1:]:
+                if num < min:
+                    min = num
+            return min
+
+        def binary_search(nums): # O(logn) time complexity; O(1) space complexity
+            l, r = 0, len(nums) - 1
+            res = nums[0] # Don't need <= because of this in the first if conditional, but it doesn't matter
+
+            while l <= r:
+                if nums[l] <= nums[r]: # This part is sorted, so there's no need to continue
+                    res = min(res, nums[l])
+                    break
+                
+                m = l + (r - l) // 2
+                res = min(res, nums[m]) # Make sure not to exclude this (because of r = m - 1)
+
+                if nums[l] <= nums[m]: # [2, 1] for example needs <=
+                    l = m + 1
+                else:
+                    r = m - 1
+            
+            return res
+        
+        def binary_search_lower_bound(nums): # O(logn) time complexity; O(1) space complexity
+            l, r = 0, len(nums) - 1
+
+            while l < r: # < because <= causes an infinite loop (r = m assignment)
+                m = l + (r - l) // 2
+                if nums[m] > nums[r]:
+                    l = m + 1
+                elif nums[m] < nums[r]:
+                    r = m
+                else: # If they're equal, then reduce the search space by 1
+                    r -= 1 
+            
+            return nums[l] # Or nums[r]
+        
+        chosen_function = 1
+
+        match chosen_function:
+            case 0:
+                return brute_force(nums)
+            case 1:
+                return binary_search(nums)
+            case 2:
+                return binary_search_lower_bound(nums)
+            case _:
+                return -1
